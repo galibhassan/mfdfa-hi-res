@@ -7,6 +7,17 @@ import os
 DATA_DIR_MAIN = "./sample_data_folder"
 OUTPUT_DIR = "./output"
 
+INTRO = f"""
+    ----------
+    This program will collect all data files from:
+    {DATA_DIR_MAIN}
+    and output plots and data in:
+    {OUTPUT_DIR}
+    ------------
+
+"""
+print(INTRO)
+
 
 def saveImage(imagePath):
     plt.savefig(
@@ -30,12 +41,13 @@ def makeOutputDir(dataFileName, output_dir):
     if os.path.exists(newDirPath) != True:
         os.makedirs(newDirPath)
     return newDirPath
-    # print(newDirPath)
 
 
 # Files in the main data directory
 dataFileNames = os.listdir(DATA_DIR_MAIN)
+fileCount = 0
 for dataFileName in dataFileNames:
+    fileCount += 1
     dataPath = f"{DATA_DIR_MAIN}/{dataFileName}"
     df = pd.read_csv(dataPath, delimiter=";")
 
@@ -75,7 +87,6 @@ for dataFileName in dataFileNames:
     # saving figure
     tvsf_imageFileName = f't_vs_df__{dataFileName.split(".")[0]}'
     tvsf_imagePath = f"{outputSubDir}/{tvsf_imageFileName}"
-    print(tvsf_imagePath)
     saveImage(tvsf_imagePath)
 
     # ---------- MFDFA ------------------
@@ -86,23 +97,43 @@ for dataFileName in dataFileNames:
     # q_list = q_list[q_list!=0.0]
     # lag, dfa, dfa_std = MFDFA(X, lag, q = q, order = 1, stat = True, extensions = {"eDFA": True})
 
-    lag = np.unique(np.logspace(0.5, 30, 20).astype(int))
-    # orders = np.linspace(0, 10, 5).astype(int)
-    orders = [0]
-    q_list = np.linspace(0, 10, 5)
-    q_list = np.array([1,2,3])
+    lag = np.unique(np.logspace(0.5, 30, 100).astype(int))
+    orders = np.linspace(0, 10, 5).astype(int)
+    q_list = np.linspace(-10, 10, 41)
     q_list = q_list[q_list != 0.0]
 
+    ordCount = 0
     for order in orders:
+        ordCount += 1
+        qCount = 0
         for q in q_list:
+            qCount += 1
+
+            # Show status
+            print(
+                f"""
+            Processing ... ...
+                file: {fileCount}/{len(dataFileNames)},
+                order: {ordCount}/{len(orders)},
+                order: {qCount}/{len(q_list)},
+            """
+            )
+
+            # Extract lags and dfa's
             lag, dfa = MFDFA(f_data, lag=lag, q=q, order=order)
-            
-            # saving as numpy files
+
+            # save as numpy files
             currentFileNameWithoutExtension = dataFileName.split(".")[0]
-            np.save(f'{outputSubDir}/lag_{currentFileNameWithoutExtension}__q_{q}__ord_{order}', lag)
-            np.save(f'{outputSubDir}/dfa_{currentFileNameWithoutExtension}__q_{q}__ord_{order}', dfa)
-            
-            # Plotting lag vs fluction functions
+            np.save(
+                f"{outputSubDir}/lag_{currentFileNameWithoutExtension}__q_{q}__ord_{order}",
+                lag,
+            )
+            np.save(
+                f"{outputSubDir}/dfa_{currentFileNameWithoutExtension}__q_{q}__ord_{order}",
+                dfa,
+            )
+
+            # Plot lag vs fluction functions
             plt.loglog(lag, dfa, "-", label=f"q={q:.2f}, ord={order}")
 
         plt.legend()
@@ -118,3 +149,11 @@ for dataFileName in dataFileNames:
         imageFileName = f"{PLOT_DIR_PATH}/{filename}.png"
 
         saveImage(imageFileName)
+
+OUTRO = f"""
+    -----------------
+    Process finished!
+    Thank you!
+    -----------------
+"""
+print(OUTRO)
