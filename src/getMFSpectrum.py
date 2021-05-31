@@ -99,8 +99,8 @@ for dataFileName in dataFileNames:
             
             # saving as numpy files
             currentFileNameWithoutExtension = dataFileName.split(".")[0]
-            np.save(f'{outputSubDir}/lag_{currentFileNameWithoutExtension}', lag)
-            np.save(f'{outputSubDir}/dfa_{currentFileNameWithoutExtension}', dfa)
+            np.save(f'{outputSubDir}/lag_{currentFileNameWithoutExtension}__q_{q}__ord_{order}', lag)
+            np.save(f'{outputSubDir}/dfa_{currentFileNameWithoutExtension}__q_{q}__ord_{order}', dfa)
             
             # Plotting lag vs fluction functions
             plt.loglog(lag, dfa, "-", label=f"q={q:.2f}, ord={order}")
