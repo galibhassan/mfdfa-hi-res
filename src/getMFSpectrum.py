@@ -96,6 +96,13 @@ for dataFileName in dataFileNames:
     for order in orders:
         for q in q_list:
             lag, dfa = MFDFA(f_data, lag=lag, q=q, order=order)
+            
+            # saving as numpy files
+            currentFileNameWithoutExtension = dataFileName.split(".")[0]
+            np.save(f'{outputSubDir}/lag_{currentFileNameWithoutExtension}', lag)
+            np.save(f'{outputSubDir}/dfa_{currentFileNameWithoutExtension}', dfa)
+            
+            # Plotting lag vs fluction functions
             plt.loglog(lag, dfa, "-", label=f"q={q:.2f}, ord={order}")
 
         plt.legend()
