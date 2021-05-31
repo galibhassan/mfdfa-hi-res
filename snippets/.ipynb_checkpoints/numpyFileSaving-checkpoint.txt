@@ -1,0 +1,2 @@
+np.savez('nameoffile', x=x, y=y)
+np.load('nameoffile.npz')
