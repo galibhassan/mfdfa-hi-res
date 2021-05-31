@@ -2,26 +2,80 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from MFDFA import MFDFA
+import os
 
-DATA_PATH = "./sample_data/sample.csv"
-# DATA_PATH = "./sample_data/UK01a_100ms.csv"
+DATA_DIR_MAIN = './sample_data_folder'
+DATA_PATH = f'{DATA_DIR_MAIN}/sample1.csv'
 PLOT_DIR_PATH = './images'
+OUTPUT_DIR = './output'
 
+def saveImage(imagePath):
+    plt.savefig(
+        imagePath, 
+        facecolor = 'w', 
+        edgecolor = 'w',
+        orientation = 'portrait',
+        format=None,
+        dpi=300,
+        transparent = False,
+        bbox_inches = None, 
+        pad_inches = 0.1,
+        metadata = None
+    )
+    plt.clf()
+    
+def makeOutputDir(dataFileName, output_dir):
+    newDirName = f'output_{dataFileName.split(".")[0]}'
+    newDirPath = f'{output_dir}/{newDirName}'
+    if os.path.exists(newDirPath) != True:
+        os.makedirs(newDirPath)
+    return newDirPath
+    # print(newDirPath)
+
+
+
+dataFileName = 'sample.csv'
 df = pd.read_csv(DATA_PATH, delimiter=";")
-f_data = df["f50_UK01a"].to_numpy()
-t_domain = np.arange(0, len(f_data))
-# print(domain)
 
-# plt.plot(t_domain, f_data)
+tColumnName = df.columns[0]
+dataSpanString = f'{df[tColumnName].iloc[0]} - {df[tColumnName].iloc[-1]}'
+fColumnName = df.columns[1]
+refFreq = int(fColumnName.split("_")[0].split("f")[1])
+print(refFreq)
+f_data = df[fColumnName].to_numpy()
+t_domain = np.arange(0, len(f_data))*100/1000/60/60 # in hr
+timeUnit = 'hour'
+
+# Create the output subfolder
+outputSubDir =  makeOutputDir(dataFileName, OUTPUT_DIR)
+
+# plot of time vs frequency
+plt.plot(t_domain, f_data, label=f'Deviation from {refFreq}Hz' )
+plt.hlines(0, t_domain[0], t_domain[-1], colors='orange', linestyles='--', label=f'{refFreq}hz', data=None,)
+plt.xlabel(f"Time ({timeUnit})")
+plt.ylabel(f"Frequency Deviation (in mHz) from {refFreq}Hz")
+plt.title(f'''Time vs Frequency-deviation
+Time span: {dataSpanString}''')
+plt.legend()
+
+# saving figure
+tvsf_imageFileName = f't_vs_df__{dataFileName.split(".")[0]}'
+tvsf_imagePath = f'{outputSubDir}/{tvsf_imageFileName}'
+print(tvsf_imagePath)
+saveImage(tvsf_imagePath)
+
 # plt.show()
+
+
+
+
+
 
 # lag = np.unique(np.logspace(0.5, 3, 100).astype(int))
 # q_list = np.linspace(-10,10,41)
 # q_list = q_list[q_list!=0.0]
 # lag, dfa, dfa_std = MFDFA(X, lag, q = q, order = 1, stat = True, extensions = {"eDFA": True})
-
-# lag = np.array([5,6,7,8,9,10])
-# q_list = [2, 3, 4]
+""" 
 lag = np.unique(np.logspace(0.5, 30, 100).astype(int))
 # orders = np.linspace(0,10,5).astype(int)
 q_list = np.linspace(0,10,5)
@@ -41,16 +95,6 @@ for order in orders:
 
     filename = f'F_q(s)__order_{order}__q_many'
     imageFileName=f'{PLOT_DIR_PATH}/{filename}.png'
-    plt.savefig(
-        imageFileName, 
-        facecolor = 'w', 
-        edgecolor = 'w',
-        orientation = 'portrait',
-        format=None,
-        dpi=300,
-        transparent = False,
-        bbox_inches = None, 
-        pad_inches = 0.1,
-        metadata = None
-    )
-    plt.clf()
+
+    saveImage(imageFileName)
+ """
