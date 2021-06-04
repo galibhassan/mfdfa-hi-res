@@ -5,7 +5,7 @@ from MFDFA import MFDFA
 import os
 
 DATA_DIR_MAIN = "../../data"
-OUTPUT_DIR = "./output3_lag_32_1439999"
+OUTPUT_DIR = "./output3__lag_32_1439999"
 
 INTRO = f"""
     ----------
