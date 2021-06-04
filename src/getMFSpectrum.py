@@ -107,7 +107,7 @@ for dataFileName in dataFileNames:
     nPointsLagMS = 60*60*4*scale # number of lag points in miliseconds (here 4 hours duration)
     lagEnd_log = np.log10(nPointsLagMS)
 
-    lag = np.unique(np.logspace(lagStart_log,lagEnd_log,10).astype(int))
+    lag = np.unique(np.logspace(lagStart_log,lagEnd_log,40).astype(int))
     
     orders = [0,1,2]
     q_list = np.linspace(-10, 10, 41)
