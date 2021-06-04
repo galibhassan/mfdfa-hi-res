@@ -5,7 +5,7 @@ from MFDFA import MFDFA
 import os
 
 DATA_DIR_MAIN = "../../data"
-OUTPUT_DIR = "./output2"
+OUTPUT_DIR = "./output3_lag_32_1439999"
 
 INTRO = f"""
     ----------
@@ -100,8 +100,15 @@ for dataFileName in dataFileNames:
 
     # lag = np.unique(np.logspace(0.5, 30, 40).astype(int))
     #orders = np.linspace(0, 10, 5).astype(int)    
+        
+    scale = 100 # milisecond
+    lagEnd_previous = 30
+    lagStart_log = np.log10(lagEnd_previous + 2)
+    nPointsLagMS = 60*60*4*scale # number of lag points in miliseconds (here 4 hours duration)
+    lagEnd_log = np.log10(nPointsLagMS)
+
+    lag = np.unique(np.logspace(lagStart_log,lagEnd_log,10).astype(int))
     
-    lag = np.unique(np.linspace(4,30,40).astype(int))
     orders = [0,1,2]
     q_list = np.linspace(-10, 10, 41)
     q_list = q_list[q_list != 0.0]
