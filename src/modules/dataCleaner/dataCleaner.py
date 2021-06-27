@@ -43,6 +43,8 @@ def getOutliersIndices(y, confidence=3):
 
 
 def clean__FO__01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
     return [dataRaw]
 
 def clean__UK01a_100ms(t_old, dataRaw):
@@ -101,8 +103,11 @@ def clean__RUS01_100ms(t_old, dataRaw):
     return [dataRaw]
     
     
-def clean__EST01_100ms():
-    pass
+def clean__EST01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    return [dataRaw]
+    
 def clean__IT_SI01_100ms(t_old, dataRaw):
     
     argOutliers = getOutliersIndices(dataRaw)
@@ -229,26 +234,25 @@ def clean__US__UT01_100ms(t_old, dataRaw):
     return [dataRaw]
     
 def clean__UK01_100ms():
-    pass
-def clean__FR01_100ms():
-    pass
-def clean__HR01_100ms(t_old, data_HR01_100ms):
+    pass # similar data exists (UK01a_100ms)
+
+def clean__FR01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    return [dataRaw]
+
+def clean__HR01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+
     # bad data in the interval t = 2.42e6 to 2.69e6
     scale = 1000000
     init = 0
     final = -1
-    a = int(2.42*scale)
-    b = int(2.69*scale)
+    a1 = int(2.42*scale)
+    a2 = int(2.69*scale)
+    dataTrimmed1 = dataRaw[init:a1]
+    dataTrimmed2 = dataRaw[a2:final]
     
-    t1 = t_old[init:a]
-    t2 = t_old[b:final]
-    cleaned_freq_dev__1 = data_HR01_100ms[init:a]
-    cleaned_freq_dev__2 = data_HR01_100ms[b:final]
-    
-    # plt.plot(t1, cleaned_freq_dev__1, 'o', markersize=0.5, color='red')
-    # saveImage('./images/temp/temp1.png')
-    # plt.plot(t2, cleaned_freq_dev__2, 'o', markersize=0.5, color='blue')
-    # saveImage('./images/temp/temp2.png')
-    
-    return [cleaned_freq_dev__1, cleaned_freq_dev__2]
+    return [dataTrimmed1, dataTrimmed2]
 
