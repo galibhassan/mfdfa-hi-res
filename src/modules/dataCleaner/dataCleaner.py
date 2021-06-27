@@ -17,7 +17,7 @@ def saveImage(imagePath):
     )
     plt.clf()
 
-    
+
 def getOutliersIndices(y, confidence=3):
     diff1 = np.diff(y)
     sigmaDiff = np.std(diff1)
@@ -42,85 +42,192 @@ def getOutliersIndices(y, confidence=3):
 
 
 
-def clean__FO__01_100ms():
-    pass
+def clean__FO__01_100ms(t_old, dataRaw):
+    return [dataRaw]
 
-def clean__UK01a_100ms(t_old, data__UK01a_100ms):
+def clean__UK01a_100ms(t_old, dataRaw):
     # bad data in the interval t = 1950 to 2350
-    a = 2350
-    b = -1
-    t = t_old[a:b]
-    cleaned_freq_dev = data__UK01a_100ms[a:b]
-    # plt.plot(t, cleaned_freq_dev, 'o', markersize=0.5, color='red')
-    # saveImage('./images/temp/temp.png')
-    return [cleaned_freq_dev]
+    scale = 1000000
+    init = 2350
+    a1 = int(2.83*scale)
+    a2 = int(2.895*scale)
     
+    dataTrimmed1 = dataRaw[init:a1]
     
+    argOutliers = getOutliersIndices(dataTrimmed1)
+    dataTrimmed1[argOutliers] = np.nan
     
+    return [dataTrimmed1]
 
+def clean__DE_OL01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    return [dataRaw]
 
-def clean__DE_OL01_100ms():
-    pass
-def clean__US__TX01_100ms():
-    pass
-def clean__RUS01_100ms():
-    pass
+def clean__US__TX01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    
+    scale = 1000000
+    a1 = int(1.2*scale)
+    a2 = int(4.5*scale)
+    b1 = int(5.125*scale)
+    b2 = int(5.275*scale)
+    
+    dataTrimmed1 = dataRaw[0:a1]
+    dataDeleted12 = dataRaw[a1:a2]
+    dataTrimmed2 = dataRaw[a2:b1]
+    dataDeleted23 = dataRaw[b1:b2]
+    dataTrimmed3 = dataRaw[b2:-1]
+
+    plt.subplot(2,1,1)
+    plt.title("US__TX_100ms deleted")
+    plt.plot(t_old[a1:a2], dataDeleted12, 'o', label='deleted 1', markersize=0.5)
+    plt.subplot(2,1,2)
+    plt.plot(t_old[b1:b2], dataDeleted23, 'o', label='deleted 2', markersize=0.5)
+    plt.legend()
+    saveImage(f'./images/temp/US__TX01_100ms.png')
+    
+    return [dataTrimmed1, dataTrimmed2, dataTrimmed3]
+    
+def clean__RUS01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    # plt.plot(t_old, dataRaw, 'o', label='dirty')
+    dataRaw[argOutliers] = np.nan
+    # plt.plot(t_old, dataRaw, 'o', markersize=.5, label='clean')
+    # plt.legend()
+    # plt.title("RUS01_100ms")
+    # saveImage('./images/temp/rus_1.png')
+    return [dataRaw]
+    
+    
 def clean__EST01_100ms():
     pass
 def clean__IT_SI01_100ms(t_old, dataRaw):
-    # Clean the abrupt jump
+    
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    
     scale = 1000000
-    a1 = int(2.7*scale)
-    a2 = int(2.8*scale)
-    maxInd1 = np.argmax(dataRaw[a1:a2])    
-    dataRaw[a1+maxInd1] = np.nan
+    a1 = int(0.83*scale)
+    a2 = int(1.37*scale)
+    b1 = int(2.55*scale)
+    b2 = int(2.73*scale)
     
-    # clean the straight-lines
-    b1= int(0.83*scale)
-    b2= int(1.37*scale)
-    c1= int(2.55*scale)
-    c2= int(2.73*scale)
-    
-    cleaned_freq_dev = dataRaw
-    
-    # plt.plot(t_old[b2:c1], cleaned_freq_dev[b2:c1], 'o', markersize=0.5)
-    # saveImage('./images/temp/temp1.png')
-    
-    chunk2 = cleaned_freq_dev[c2:-1]
-    argOutliers = getOutliersIndices(chunk2)
-    # print(argOutliers)
-    
-    
-    plt.plot(t_old[c2:-1], cleaned_freq_dev[c2:-1], 'o', markersize=5, alpha=0.5, label='dirty')
-    
-    chunk2[argOutliers] = np.nan
-    plt.plot(t_old[c2:-1], chunk2, 'o', markersize=0.5, alpha=0.5, label='clean')
+    dataTrimmed1 = dataRaw[0:a1]
+    dataDeleted12 = dataRaw[a1:a2]
+    dataTrimmed2 = dataRaw[a2:b1]
+    dataDeleted23 = dataRaw[b1:b2]
+    dataTrimmed3 = dataRaw[b2:-1]
+
+    plt.subplot(2,1,1)
+    plt.title("IT_SI01_100ms deleted")
+    plt.plot(t_old[a1:a2], dataDeleted12, 'o', label='deleted 1', markersize=0.5)
+    plt.subplot(2,1,2)
+    plt.plot(t_old[b1:b2], dataDeleted23, 'o', label='deleted 2', markersize=0.5)
     plt.legend()
-    saveImage('./images/temp/temp2_1.png')
+    saveImage(f'./images/temp/IT_SI01_100ms.png')
     
-    
-    # return [data_SI01_100ms]
-    
-    
+    return [dataTrimmed1, dataTrimmed2, dataTrimmed3]
     
 def clean__ES__PM01a_100ms():
-    pass
-def clean__TUR__IS01_100ms():
-    pass
-def clean__UK02b_100ms():
-    pass
-def clean__PL01_100ms():
-    pass
-def clean__UK02a_100ms():
-    pass
-def clean__SE01_100ms():
-    pass
-def clean__DE__KA02_100ms():
-    pass
-def clean__PT_LI01_100ms():
-    pass
-def clean__US__UT01_100ms():
-    pass
+    pass # data not available
+
+def clean__TUR__IS01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    return [dataRaw]
+
+def clean__UK02b_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    scale = 10000000
+    a1 = int(0.73*scale)
+    a2 = int(1.02*scale)
+    
+    dataTrimmed1 = dataRaw[0:a1]
+    dataDeleted12 = dataRaw[a1:a2]
+    dataTrimmed2 = dataRaw[a2:-1]
+    plt.plot(t_old[a1:a2], dataRaw[a1:a2], 'o', ms=0.1)
+    plt.grid(True)
+    plt.title('UK02b_100ms__deleted')
+    saveImage(f'./images/temp/UK02b_100ms__deleted.png')
+    return [dataTrimmed1, dataTrimmed2]
+    
+def clean__PL01_100ms(t_old, dataRaw):
+    scale = 1000000
+    a = int(0.6*scale)
+    b = -1
+    dataTrimmed = dataRaw[a:b]
+    
+    argOutliers = getOutliersIndices(dataTrimmed)
+    dataTrimmed[argOutliers] = np.nan
+    
+    return [dataTrimmed]
+    
+    
+def clean__UK02a_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    return [dataRaw]
+    
+def clean__SE01_100ms(t_old, dataRaw):
+    # scale = 1000000
+    # a = int(0.44*scale)
+    # b = int(0.47*scale)
+    # b = -1
+    # dataTrimmed = dataRaw[a:b]
+    # plt.plot(t_old[a:b], dataRaw[a:b], 'o', markersize=0.5)
+    # plt.title('SE01_100ms')
+    # saveImage(f'./images/temp/SE01_1__{a}_to_{b}.png')
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    
+    return [dataRaw]
+    
+def clean__DE__KA02_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    return [dataRaw]
+
+def clean__PT_LI01_100ms(t_old, dataRaw):
+    scale = 10000000
+    a1 = int(1.36*scale)
+    a2 = int(1.45*scale)
+    b1 = int(1.884*scale)
+    b2 = int(1.913*scale)
+    
+    dataTrimmed1 = dataRaw[0:a1]
+    dataDeleted12 = dataRaw[a1:a2]
+    dataTrimmed2 = dataRaw[a2:b1]
+    dataDeleted23 = dataRaw[b1:b2]
+    dataTrimmed3 = dataRaw[b2:-1]
+
+    plt.subplot(2,1,1)
+    plt.title("PT_LI01_100ms deleted")
+    plt.plot(t_old[a1:a2], dataDeleted12, 'o', label='deleted 1', markersize=0.5)
+    plt.subplot(2,1,2)
+    plt.plot(t_old[b1:b2], dataDeleted23, 'o', label='deleted 2', markersize=0.5)
+    plt.legend()
+    saveImage('./images/temp/PT_LI01_100ms_deleted.png')
+    
+    argOutliers1 = getOutliersIndices(dataTrimmed1)
+    dataTrimmed1[argOutliers1] = np.nan
+    
+    argOutliers2 = getOutliersIndices(dataTrimmed2)
+    dataTrimmed2[argOutliers2] = np.nan
+    
+    argOutliers3 = getOutliersIndices(dataTrimmed3)
+    dataTrimmed3[argOutliers3] = np.nan
+    
+    return [dataTrimmed1,dataTrimmed2,dataTrimmed3]
+
+    
+def clean__US__UT01_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    return [dataRaw]
+    
 def clean__UK01_100ms():
     pass
 def clean__FR01_100ms():
