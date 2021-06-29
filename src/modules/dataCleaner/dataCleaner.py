@@ -135,8 +135,10 @@ def clean__IT_SI01_100ms(t_old, dataRaw):
     
     return [dataTrimmed1, dataTrimmed2, dataTrimmed3]
     
-def clean__ES__PM01a_100ms():
-    pass # data not available
+def clean__ES__PM01a_100ms(t_old, dataRaw):
+    argOutliers = getOutliersIndices(dataRaw)
+    dataRaw[argOutliers] = np.nan
+    return [dataRaw]
 
 def clean__TUR__IS01_100ms(t_old, dataRaw):
     argOutliers = getOutliersIndices(dataRaw)
@@ -233,8 +235,10 @@ def clean__US__UT01_100ms(t_old, dataRaw):
     dataRaw[argOutliers] = np.nan
     return [dataRaw]
     
-def clean__UK01_100ms():
-    pass # similar data exists (UK01a_100ms)
+# def clean__UK01_100ms(t_old, ):
+    # pass 
+    # similar data exists (UK01a_100ms)
+
 
 def clean__FR01_100ms(t_old, dataRaw):
     argOutliers = getOutliersIndices(dataRaw)

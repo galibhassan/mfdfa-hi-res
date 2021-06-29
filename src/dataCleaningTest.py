@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import modules.dataCleaner.dataCleaner as dc
 
-dataFileName = 'UK01a_100ms'
+# dataFileName = 'UK01a_100ms'
 # dataFileName = 'HR01_100ms'
 # dataFileName = 'IT-SI01_100ms'
 # dataFileName = 'RUS01_100ms'
